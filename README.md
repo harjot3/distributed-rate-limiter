@@ -2,7 +2,7 @@
 
 A rate limiter that sits in front of a Spring Boot API and enforces per-client
 request limits using a token bucket algorithm, backed by Redis so the limit
-holds correctly across multiple application instances — not just one.
+holds correctly across multiple application instances.
 
 ## Why this exists
 
