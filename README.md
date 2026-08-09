@@ -8,26 +8,18 @@ holds correctly across multiple application instances — not just one.
 
 Every public API: Stripe, GitHub, AWS, your bank's API, has to answer the
 same question: *how many requests will I let this client make per second?*
-Get it wrong and either bad actors (or a buggy client) can hammer your
-backend into the ground, or legitimate users get throttled unfairly.
+Get it wrong and buggy client can damage your backend or users will get suffocated.
 
-The hard part isn't the algorithm, it's making the limit hold when your
+The hard part to this isn't the algorithm, but making the limit hold when your
 service isn't a single process. Once you're running 3 replicas behind a load
 balancer, each instance only sees a third of any given client's traffic. If
 each instance counts requests in its own memory, a client can get 3x their
 actual limit just by getting lucky with load-balancer routing. This project
 solves that by moving the counting into Redis, shared by every instance, and
 using a Lua script so the "check the count, then update it" step happens as
-one atomic operation — otherwise two instances checking at the exact same
+one atomic operation; otherwise two instances checking at the exact same
 millisecond could both approve a request that should have been the one over
 the limit.
-
-This is the same category of problem solved by rate-limiting middleware at
-companies like Stripe, Shopify, and Cloudflare, and it's a standard system
-design interview topic for exactly this reason: it's small enough to
-implement end-to-end, but it forces real distributed-systems tradeoffs
-(atomicity, clock sync, fail-open vs. fail-closed, memory growth for
-per-client state).
 
 ## Architecture
 
@@ -66,7 +58,7 @@ mvn spring-boot:run                       # start the app
 k6 run k6/load_test.js                    # run the load test
 ```
 
-## What I'd build next
+## What I'd build next continuing the project
 
 - Sliding-window log variant for comparison against token bucket
 - Explicit fail-open/fail-closed handling for Redis outages
